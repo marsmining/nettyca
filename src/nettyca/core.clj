@@ -1,11 +1,23 @@
 (ns nettyca.core
-  "Functions to start and stop a socket server"
+  "Echo examples and start/stop plus main fns"
   (:require [clojure.tools.logging :as log]
             [nettyca.netty :as netty]
             [clojure.core.async :refer [chan timeout go go-loop alts!
                                         <! >! close!] :as async]))
 
-(defn echo-impl
+;; three echo implementations
+;;
+
+(defn echo-impl-simple [rw]
+  (async/pipe (rw :r) (rw :w)))
+
+(defn echo-impl-newline [rw]
+  (let [map-ch (chan 1 (map #(str % "\r\n"))
+                     #(log/error % "transducer err!"))]
+    (async/pipe (rw :r) map-ch)
+    (async/pipe map-ch (rw :w))))
+
+(defn echo-impl-timeout
   "An echo impl, loop inside go macro, close chan if timeout"
   [rw]
   (go-loop []
@@ -15,6 +27,9 @@
           (recur))
       (do (log/info "echo: got timeout or closed chan")
           (close! (rw :r)) (close! (rw :w))))))
+
+;; start/stop and a main
+;;
 
 (defn start [port protocol-fn]
   "Start a socket server on port"
@@ -29,11 +44,12 @@
 
 (defn -main []
   (log/info "starting..")
-  (start 9090 echo-impl))
+  (start 9090 echo-impl-timeout))
 
 (comment
 
-  (def sys (start 9090 echo-impl))
+  ;; call from repl examples
+  (def sys (start 9090 echo-impl-timeout))
   (stop sys)
 
   )
