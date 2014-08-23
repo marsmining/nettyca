@@ -12,7 +12,7 @@ See the core namespace for examples of a simple echo protocol.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Brandon van Beekum
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
