@@ -81,7 +81,8 @@
     (go-loop [clients []]
       (if-let [rw (<! conn-chan)]
         (do (log/info "snca: got r/w channel pair..")
-            (handler-fn rw)
+            (try (handler-fn rw)
+                 (catch Throwable t (log/error t "snca: err invoking handler!")))
             (recur (conj clients rw)))
         (do (log/info "snca: recvd nil, conn-chan closed")
             (doseq [lrw clients] (close! (lrw :r)) (close! (lrw :w)))
