@@ -41,6 +41,16 @@ To start an echo server in the repl, follow these steps:
 
 See the core namespace for other examples of a simple echo protocol.
 
+### Why?
+
+There already exists a robust and feature complete set of libraries which
+implement a channel abstraction in conjuction with Netty, it is called
+[Aleph](https://github.com/ztellman/aleph). This library is tiny and
+incompletely emulates just one specific case of Aleph's functionality.
+Therefore `nettyca` is for someone who might want to play with the very
+latest Netty and core.async libraries, without re-writing the Java
+interop code to wire them together.
+
 ### Detail
 
 To start an echo server in the repl, follow these steps:
