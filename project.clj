@@ -9,4 +9,6 @@
                  [org.clojure/core.async "0.1.338.0-5c5012-alpha"]]
   :profiles {:dev {:dependencies [[org.clojure/test.check "0.5.8"]
                                   [ch.qos.logback/logback-classic "1.1.2"]]}}
-  :main nettyca.core)
+  :main nettyca.core
+  :aot [nettyca.core]
+  :jar-exclusions [#"logback.xml"])
