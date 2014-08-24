@@ -43,6 +43,9 @@ the read channel and write channel respectively.
 
 In this simplest implementation, we just use core.async `pipe`
 function to send values from the read channel to the write channel.
+You'll notice that we could simply pass the `pipe` function directly
+because of the similar arguments expected, but for any protocol less
+trivial, you'll be implementing your own function, as shown here.
 
 Next, start a Netty server listening on a port:
 
