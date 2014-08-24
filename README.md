@@ -23,10 +23,10 @@ Add `nettyca` as a dependency in your `project.clj` file:
 
 Notice the Clojure version is alpha, this is required in order to
 operate on channels with
-[transducers](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming),
-a new feature of Clojure. Also notice, in the example above, I've
-included a Java logging implementation. If your project already has
-one, leave the [logback](http://logback.qos.ch/) dependency out.
+[transducers](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming).
+Also notice, in the example above, included is a Java logging
+implementation. If your project already has one, leave the
+[logback](http://logback.qos.ch/) dependency out.
 
 ### Quick Start
 
