@@ -3,14 +3,11 @@
             [clojure.core.async :refer [chan timeout go go-loop alts!
                                         <! >! close!] :as async])
   (:import (io.netty.bootstrap ServerBootstrap)
-           (io.netty.channel ChannelHandler ChannelHandlerAdapter
-                             ChannelInitializer ChannelOption
-                             ChannelFutureListener)
+           (io.netty.channel ChannelHandlerAdapter
+                             ChannelInitializer ChannelOption)
            (io.netty.channel.nio NioEventLoopGroup)
            (io.netty.channel.socket SocketChannel)
            (io.netty.channel.socket.nio NioServerSocketChannel)
-           (io.netty.buffer ByteBuf)
-           (io.netty.util ReferenceCountUtil)
            (io.netty.handler.codec.string StringEncoder StringDecoder)
            (io.netty.handler.codec LineBasedFrameDecoder)))
 
