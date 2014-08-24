@@ -40,7 +40,7 @@ To start an echo server in the repl, follow these steps:
 (stop sys)
 ```
 
-See the core namespace for other examples of a simple echo protocol.
+See the [core namespace](src/nettyca/core.clj) for other examples of a simple echo protocol.
 
 ### Why?
 
