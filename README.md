@@ -33,9 +33,9 @@ To start an echo server in the repl, follow these steps:
 
 ```clj
 (use 'nettyca.core)
-
+;; start netty, passing a fn which accepts two args, r and w chans
 (def sys (start 9090 clojure.core.async/pipe))
-
+;; try telnet localhost 9090 now
 (stop sys)
 ```
 
