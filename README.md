@@ -7,7 +7,8 @@ function you define, passing it a pair of
 you use in your handler for reading and writing to a client.
 
 This is not for production! Just a way to play with writing socket
-servers in terms of core.async channels.
+servers in terms of core.async channels. It uses Netty 5 and Clojure
+1.7 __alpha__ releases.
 
 ## Usage
 
@@ -40,7 +41,7 @@ the read channel and write channel respectively.
     user=> (defn echo [r w] (clojure.core.async/pipe r w))
     #'user/echo
 
-In this simplest implementation, we simply use core.async `pipe`
+In this simplest implementation, we just use core.async `pipe`
 function to send values from the read channel to the write channel.
 
 Next, start a Netty server listening on a port:
