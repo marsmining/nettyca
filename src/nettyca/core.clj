@@ -8,25 +8,25 @@
 ;; three echo implementations
 ;;
 
-(defn echo-impl-simple [rw]
-  (async/pipe (rw :r) (rw :w)))
+(defn echo-impl-simple [r w]
+  (async/pipe r w))
 
-(defn echo-impl-newline [rw]
+(defn echo-impl-newline [r w]
   (let [map-ch (chan 1 (map #(str % "\r\n"))
                      #(log/error % "transducer err!"))]
-    (async/pipe (rw :r) map-ch)
-    (async/pipe map-ch (rw :w))))
+    (async/pipe r map-ch)
+    (async/pipe map-ch w)))
 
 (defn echo-impl-timeout
   "An echo impl, loop inside go macro, close chan if timeout"
-  [rw]
+  [r w]
   (go-loop []
-    (if-let [msg (first (alts! [(rw :r) (timeout 5000)]))]
+    (if-let [msg (first (alts! [r (timeout 5000)]))]
       (do (log/info "echo: got msg:" msg)
-          (>! (rw :w) (str msg "\r\n"))
+          (>! w (str msg "\r\n"))
           (recur))
       (do (log/info "echo: got timeout or closed chan")
-          (close! (rw :r)) (close! (rw :w))))))
+          (close! r) (close! w)))))
 
 ;; start/stop and a main
 ;;
