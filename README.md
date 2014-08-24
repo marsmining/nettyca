@@ -27,7 +27,21 @@ feature of Clojure. Also, in the example above, I've included a Java
 logging implementation. If your project already has one, leave the
 [logback](http://logback.qos.ch/) dependency out.
 
-See the core namespace for examples of a simple echo protocol.
+### Quick Start
+
+To start an echo server in the repl, follow these steps:
+
+```clj
+(use 'nettyca.core)
+
+(def sys (start 9090 clojure.core.async/pipe))
+
+(stop sys)
+```
+
+See the core namespace for other examples of a simple echo protocol.
+
+### Detail
 
 To start an echo server in the repl, follow these steps:
 
