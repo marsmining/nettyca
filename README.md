@@ -62,7 +62,7 @@ Finally, stop the server:
 
     user=> (stop sys)
     INFO nettyca.netty   snca: recvd nil, conn-chan closed
-    nil
+    INFO nettyca.netty   server: in finally clause..
 
 That's it!
 
