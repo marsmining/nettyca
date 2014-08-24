@@ -21,11 +21,12 @@ Add `nettyca` as a dependency in your `project.clj` file:
                  [ch.qos.logback/logback-classic "1.1.2"]])
 ```
 
-Notice the Clojure version is alpha, this library is using the new
-[transducer](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming)
-feature of Clojure. Also, in the example above, I've included a Java
-logging implementation. If your project already has one, leave the
-[logback](http://logback.qos.ch/) dependency out.
+Notice the Clojure version is alpha, this is required in order to
+operate on channels with
+[transducers](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming),
+a new feature of Clojure. Also notice, in the example above, I've
+included a Java logging implementation. If your project already has
+one, leave the [logback](http://logback.qos.ch/) dependency out.
 
 ### Quick Start
 
