@@ -5,17 +5,14 @@
             [clojure.core.async :refer [chan timeout go go-loop alts!
                                         <! >! close!] :as async]))
 
-;; three echo implementations
+;; three echo server impls
 ;;
 
 (defn echo-impl-simple [r w]
   (async/pipe r w))
 
 (defn echo-impl-newline [r w]
-  (let [map-ch (chan 1 (map #(str % "\r\n"))
-                     #(log/error % "transducer err!"))]
-    (async/pipe r map-ch)
-    (async/pipe map-ch w)))
+  (async/pipeline 1 w (map #(str % "\r\n")) r))
 
 (defn echo-impl-timeout
   "An echo impl, loop inside go macro, close chan if timeout"
@@ -28,15 +25,25 @@
       (do (log/info "echo: got timeout or closed chan")
           (close! r) (close! w)))))
 
+;; client example, echo test
+
+(defn echo-client-test [r w]
+  (go (let [[v p] (alts! [[w "42\r\n"] (timeout 500)])
+            _ (log/info "### wrote:" v p)
+            [v p] (alts! [r (timeout 5000)])
+            _ (log/info "### read:" v p)]
+        (log/info "### test result:" (= v "42"))
+        (close! r) (close! w))))
+
 ;; start/stop and a main
 ;;
 
-(defn start [port protocol-fn]
-  "Start a socket server on port"
+(defn start [host port handler type]
+  "Start a socket client or server on port"
   (let [ch (async/chan)]
     {:chan ch
      :future (netty/start-netty-core-async
-              ch port protocol-fn)}))
+              ch host port handler type)}))
 
 (defn stop [sys]
   "Stop the system and clean-up"
@@ -44,12 +51,15 @@
 
 (defn -main []
   (log/info "starting..")
-  (start 9090 echo-impl-timeout))
+  (start "127.0.0.1" 9090 echo-impl-timeout :server))
 
 (comment
 
-  ;; call from repl examples
-  (def sys (start 9090 echo-impl-timeout))
-  (stop sys)
+  ;; call from repl examples, server
+  (def ss (start "127.0.0.1" 9090 echo-impl-timeout :server))
+  (stop ss)
 
+  ;; client connection
+  (def sc (start "127.0.0.1" 9090 echo-client-test :client))
+  (stop sc)
   )

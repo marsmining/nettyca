@@ -2,12 +2,12 @@
   (:require [clojure.tools.logging :as log]
             [clojure.core.async :refer [chan timeout go go-loop alts!
                                         <! >! close!] :as async])
-  (:import (io.netty.bootstrap ServerBootstrap)
+  (:import (io.netty.bootstrap Bootstrap ServerBootstrap)
            (io.netty.channel ChannelHandlerAdapter
                              ChannelInitializer ChannelOption)
            (io.netty.channel.nio NioEventLoopGroup)
            (io.netty.channel.socket SocketChannel)
-           (io.netty.channel.socket.nio NioServerSocketChannel)
+           (io.netty.channel.socket.nio NioSocketChannel NioServerSocketChannel)
            (io.netty.handler.codec.string StringEncoder StringDecoder)
            (io.netty.handler.codec LineBasedFrameDecoder)))
 
@@ -46,18 +46,34 @@
           (.addLast "stringEncoder" (StringEncoder.))
           (.addLast "myHandler" (handler-fn))))))
 
-(defn start-netty
+(defn start-netty-client
+  "Start Netty client"
+  [group host port pipeline]
+  (try
+    (log/info "client: starting netty client on port:" port)
+    (let [b (doto (Bootstrap.)
+              (.group group)
+              (.channel NioSocketChannel)
+              (.option ChannelOption/SO_KEEPALIVE true)
+              (.handler pipeline))
+          f (-> b (.connect host (int port)) .sync)]
+      (-> f .channel .closeFuture .sync))
+    (finally
+      (log/info "client: in finally clause..")
+      (.shutdownGracefully group))))
+
+(defn start-netty-server
   "Start Netty server, blocking this thread until shutdown"
-  [group port handler-fn]
+  [group host port pipeline]
   (try
     (log/info "server: starting netty on port:" port)
     (let [b (doto (ServerBootstrap.)
               (.group group)
               (.channel NioServerSocketChannel)
-              (.childHandler (mk-initializer handler-fn))
+              (.childHandler pipeline)
               (.option ChannelOption/SO_BACKLOG (int 128))
               (.childOption ChannelOption/SO_KEEPALIVE true))
-          f (-> b (.bind (int port)) .sync)]
+          f (-> b (.bind host (int port)) .sync)]
       (-> f .channel .closeFuture .sync))
     (finally
       (log/info "server: in finally clause..")
@@ -65,22 +81,27 @@
 
 (defn start-netty-off-thread
   "Start Netty on another thread, return map with handles to shutdown"
-  [port handler-fn]
+  [host port pipeline type]
   (let [group (NioEventLoopGroup.)]
     {:group group
-     :server (future (start-netty group port handler-fn))
+     :server (future (if (= type :server)
+                       (start-netty-server group host port pipeline)
+                       (start-netty-client group host port pipeline)))
      :shutdown-fn #(.shutdownGracefully group)}))
 
 (defn start-netty-core-async
   "Start Netty server, new connections send r/w channel pair on conn-chan"
-  [conn-chan port handler-fn]
-  (let [sys (start-netty-off-thread port #(mk-handler-core-async conn-chan))]
+  [conn-chan host port handler type]
+  (let [pre (str (name type) ":")
+        pipeline (mk-initializer #(mk-handler-core-async conn-chan))
+        sys (start-netty-off-thread host port pipeline type)]
     (go-loop [clients []]
       (if-let [rw (<! conn-chan)]
-        (do (log/info "snca: got r/w channel pair..")
-            (try (handler-fn (rw :r) (rw :w))
-                 (catch Throwable t (log/error t "snca: err invoking handler!")))
+        (do (log/info pre "snca: got r/w channel pair..")
+            (try (handler (rw :r) (rw :w))
+                 (catch Throwable t
+                   (log/error t pre "snca: err calling handler!")))
             (recur (conj clients rw)))
-        (do (log/info "snca: recvd nil, conn-chan closed")
+        (do (log/info pre "snca: recvd nil, conn-chan closed")
             (doseq [lrw clients] (close! (lrw :r)) (close! (lrw :w)))
             (.shutdownGracefully (:group sys)))))))
