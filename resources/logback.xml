@@ -18,8 +18,8 @@
   </appender>
 
 
-  <logger name="io" level="DEBUG" />
-  <logger name="nettyca" level="INFO" />
+  <logger name="io" level="INFO" />
+  <logger name="nettyca" level="DEBUG" />
 
   <root level="DEBUG">
     <appender-ref ref="STDOUT" />

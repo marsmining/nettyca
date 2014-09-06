@@ -98,7 +98,9 @@
     (go-loop [clients []]
       (if-let [rw (<! conn-chan)]
         (do (log/info pre "snca: got r/w channel pair..")
-            (try (handler (rw :r) (rw :w))
+            (try (if (= type :server)
+                   (handler (rw :r) (rw :w))
+                   (handler (rw :r) (rw :w) conn-chan))
                  (catch Throwable t
                    (log/error t pre "snca: err calling handler!")))
             (recur (conj clients rw)))
