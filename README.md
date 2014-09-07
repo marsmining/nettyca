@@ -1,7 +1,7 @@
 # nettyca
 
 A bit of code for starting up a [Netty](http://netty.io) tcp client or
-server, which delegates control for each incoming connection to a
+server, which delegates control for each connection to a
 protocol handler function you define. Your protocol function will be
 passed a pair of [core.async](https://github.com/clojure/core.async)
 channels, which you use in your handler for reading and writing to a
@@ -14,7 +14,7 @@ tcp client and servers in terms of core.async channels. It uses Netty
 Add `nettyca` as a dependency in your `project.clj` file:
 
 ```clj
-(defproject example-project "1.0.0"
+(defproject example-project "x.y.z"
   :dependencies [[org.clojure/clojure "1.7.0-alpha2"]
                  [nettyca "0.1.0-SNAPSHOT"]
                  [ch.qos.logback/logback-classic "1.1.2"]])
@@ -49,17 +49,18 @@ There already exists a robust and feature complete set of libraries which
 implement a channel abstraction in conjuction with Netty, it is called
 [Aleph](https://github.com/ztellman/aleph). This library, `nettyca` is
 tiny and incompletely emulates just one or two specific cases of Aleph's
-functionality. Therefore this library is for someone who might want
-only want to play with the very latest Netty and core.async libraries,
-without re-writing the Java interop code to wire them together.
+functionality. Therefore this library is only for someone who might want
+to play with the very latest Netty and core.async libraries, without
+re-writing the Java interop code to wire them together.
 
-### Detail
+### Server Detail
 
 To start an echo server in the repl, follow these steps:
 
+First load and refer in the `nettyca/core` ns:
+
     user=> (use 'nettyca.core)
-    DEBUG i.n.u.i.l.InternalLoggerFactory Using SLF4J as the default logging framework
-    DEBUG i.n.c.MultithreadEventLoopGroup -Dio.netty.eventLoopThreads: 16
+    ... log messages omitted ...
 
 Next define an echo impl as a function which accepts two arguments,
 the read channel and write channel respectively.
@@ -75,8 +76,8 @@ trivial, you'll be implementing your own function, as shown here.
 
 Next, start a Netty server listening on a port:
 
-    user=> (def sys (start 9090 echo))
-    ... debug messages omitted ...
+    user=> (def sys (start 9090 echo-impl-timeout))
+    ... log messages omitted ...
 
 Now you can telnet to port 9090:
 
@@ -91,10 +92,27 @@ Now you can telnet to port 9090:
 Finally, stop the server:
 
     user=> (stop sys)
-    INFO nettyca.netty   snca: recvd nil, conn-chan closed
-    INFO nettyca.netty   server: in finally clause..
+    ... log messages omitted ...
 
 That's it!
+
+### Client Detail
+
+With the `nettyca/core` ns loaded and referred:
+
+```clj
+(start "127.0.0.1" 9090 echo-client-test :client)
+```
+
+You'll notice there is no corresponding stop function for client
+connections. The handler for clients is passed 3 channels, read, write
+and "connection" respectively. Closing the "connection" channel closes
+and cleans up resources associated with the connection.
+
+### Command Line Interface
+
+See the [cli namespace](src/nettyca/cli.clj) for examples of starting
+from the cli versus repl.
 
 ## License
 
