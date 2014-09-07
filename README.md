@@ -35,7 +35,7 @@ To start an echo server in the repl, follow these steps:
 (use 'nettyca.core)
 ;; start netty tcp server, passing a fn which accepts two args, r and w chans
 (def sys (start "127.0.0.1" 9090 echo-server-timeout :server))
-;; try telnet localhost 9090 now
+;; try telnet 127.0.0.1 9090 now
 ;; or run an echo tcp client provided as an example
 (start "127.0.0.1" 9090 echo-client-test :client)
 (stop sys)
