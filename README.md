@@ -1,14 +1,13 @@
 # nettyca
 
-A bit of code for starting up a [Netty](http://netty.io) server which
-delegates control for each incoming connection to a protocol handler
-function you define. Your protocol function will be passed a pair of
-[core.async](https://github.com/clojure/core.async) channels, which
-you use in your handler for reading and writing to a client.
-
-This is not for production! Just a way to play with writing socket
-servers in terms of core.async channels. It uses Netty 5 and Clojure
-1.7 __alpha__ releases.
+A bit of code for starting up a [Netty](http://netty.io) tcp client or
+server, which delegates control for each incoming connection to a
+protocol handler function you define. Your protocol function will be
+passed a pair of [core.async](https://github.com/clojure/core.async)
+channels, which you use in your handler for reading and writing to a
+client. This is not for production! Just a way to play with writing
+tcp client and servers in terms of core.async channels. It uses Netty
+5 and Clojure 1.7 __alpha__ releases.
 
 ## Usage
 
@@ -16,7 +15,7 @@ Add `nettyca` as a dependency in your `project.clj` file:
 
 ```clj
 (defproject example-project "1.0.0"
-  :dependencies [[org.clojure/clojure "1.7.0-alpha1"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha2"]
                  [nettyca "0.1.0-SNAPSHOT"]
                  [ch.qos.logback/logback-classic "1.1.2"]])
 ```
@@ -34,9 +33,11 @@ To start an echo server in the repl, follow these steps:
 
 ```clj
 (use 'nettyca.core)
-;; start netty, passing a fn which accepts two args, r and w chans
-(def sys (start 9090 clojure.core.async/pipe))
+;; start netty tcp server, passing a fn which accepts two args, r and w chans
+(def sys (start "127.0.0.1" 9090 echo-impl-timeout :server))
 ;; try telnet localhost 9090 now
+;; or run an echo tcp client provided as an example
+(start "127.0.0.1" 9090 echo-client-test :client)
 (stop sys)
 ```
 
@@ -46,11 +47,11 @@ See the [core namespace](src/nettyca/core.clj) for other examples of a simple ec
 
 There already exists a robust and feature complete set of libraries which
 implement a channel abstraction in conjuction with Netty, it is called
-[Aleph](https://github.com/ztellman/aleph). This library is tiny and
-incompletely emulates just one specific case of Aleph's functionality.
-Therefore `nettyca` is for someone who might want to play with the very
-latest Netty and core.async libraries, without re-writing the Java
-interop code to wire them together.
+[Aleph](https://github.com/ztellman/aleph). This library, `nettyca` is
+tiny and incompletely emulates just one or two specific cases of Aleph's
+functionality. Therefore this library is for someone who might want
+only want to play with the very latest Netty and core.async libraries,
+without re-writing the Java interop code to wire them together.
 
 ### Detail
 
