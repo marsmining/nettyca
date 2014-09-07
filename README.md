@@ -34,7 +34,7 @@ To start an echo server in the repl, follow these steps:
 ```clj
 (use 'nettyca.core)
 ;; start netty tcp server, passing a fn which accepts two args, r and w chans
-(def sys (start "127.0.0.1" 9090 echo-impl-timeout :server))
+(def sys (start "127.0.0.1" 9090 echo-server-timeout :server))
 ;; try telnet localhost 9090 now
 ;; or run an echo tcp client provided as an example
 (start "127.0.0.1" 9090 echo-client-test :client)
@@ -62,7 +62,7 @@ First load and refer in the `nettyca/core` ns:
     user=> (use 'nettyca.core)
     ... log messages omitted ...
 
-Next define an echo impl as a function which accepts two arguments,
+Next define an echo server as a function which accepts two arguments,
 the read channel and write channel respectively.
 
     user=> (defn echo [r w] (clojure.core.async/pipe r w))
@@ -76,7 +76,7 @@ trivial, you'll be implementing your own function, as shown here.
 
 Next, start a Netty server listening on a port:
 
-    user=> (def sys (start 9090 echo-impl-timeout))
+    user=> (def sys (start 9090 echo-server-timeout))
     ... log messages omitted ...
 
 Now you can telnet to port 9090:
