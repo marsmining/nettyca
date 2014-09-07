@@ -53,7 +53,7 @@
      errors (exit 1 (error-msg errors)))
     (log/info "starting netty" type "on" host "and" port)
     (let [sys (if (= type :server)
-                (nc/start host port nc/echo-impl-timeout :server)
+                (nc/start host port nc/echo-server-timeout :server)
                 (nc/start host port nc/echo-client-test :client))]
       (async/<!! (:go-chan sys)))
     (exit 0 "done. exiting..")))
