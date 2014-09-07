@@ -10,6 +10,6 @@
                  [org.clojure/tools.cli "0.3.1"]]
   :profiles {:dev {:dependencies [[org.clojure/test.check "0.5.8"]
                                   [ch.qos.logback/logback-classic "1.1.2"]]}}
-  :main nettyca.core
-  :aot [nettyca.core]
+  :main nettyca.cli
+  :aot [nettyca.cli]
   :jar-exclusions [#"logback.xml"])
