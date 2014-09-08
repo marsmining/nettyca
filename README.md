@@ -29,7 +29,7 @@ implementation. If your project already has one, leave the
 
 ### Quick Start
 
-To start an echo server in the repl, follow these steps:
+To start an echo server and client in the repl, follow these steps:
 
 ```clj
 (use 'nettyca.core)
