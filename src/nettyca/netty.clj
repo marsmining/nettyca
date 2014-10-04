@@ -41,7 +41,7 @@
   (proxy [ChannelInitializer] []
     (initChannel [^SocketChannel ch]
       (-> (.pipeline ch)
-          (.addLast "frameDecoder" (LineBasedFrameDecoder. (int 80)))
+          (.addLast "frameDecoder" (LineBasedFrameDecoder. (int 1024)))
           (.addLast "stringDecoder" (StringDecoder.))
           (.addLast "stringEncoder" (StringEncoder.))
           (.addLast "myHandler" (handler-fn))))))
