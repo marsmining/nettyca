@@ -109,6 +109,11 @@ connections. The handler for clients is passed 3 channels, read, write
 and "connection" respectively. Closing the "connection" channel closes
 and cleans up resources associated with the connection.
 
+### Example
+
+An example of a program to check existence of mailbox using SMTP can
+be found [https://github.com/marsmining/evalid/blob/5d8b2a947b368a2c8003b8eceb42bb5684960ac7/src/evalid/core.clj][here].
+
 ### Command Line Interface
 
 See the [cli namespace](src/nettyca/cli.clj) for examples of starting
