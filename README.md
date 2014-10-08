@@ -112,7 +112,7 @@ and cleans up resources associated with the connection.
 ### Example
 
 An example of a program to check existence of mailbox using SMTP can
-be found [here](https://github.com/marsmining/evalid/blob/5d8b2a947b368a2c8003b8eceb42bb5684960ac7/src/evalid/core.clj).
+be found [here](https://github.com/marsmining/evalid/blob/6df45f16c17f1e82f3b860f139e24319b4c53159/src/evalid/core.clj).
 
 ### Command Line Interface
 
